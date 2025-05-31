@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Human Superpower Manifesto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Visualization & Content Choices: 
+        - Report Info: GDP vs. Soul Growth -> Goal: Compare abstract concepts -> Viz: Interactive Radar Chart -> Interaction: User clicks a button to switch views, dynamically updating the chart and text. Justification: Makes the central, abstract argument tangible and memorable. Library: Chart.js.
+        - Report Info: Discipline, Corruption, Rich-Poor divide -> Goal: Organize and Contrast -> Viz: Interactive HTML/CSS cards -> Interaction: On hover, cards reveal more detail, contrasting positive and negative concepts. Justification: Breaks down complex societal issues into digestible, interactive comparisons. Method: HTML/CSS/JS.
+        - Report Info: Education and unique talents -> Goal: Organize concepts -> Viz: HTML/CSS diagram of "Child Potential" with branching talents -> Interaction: Clicking a branch reveals a relevant quote. Justification: Visually represents the idea of diverse intelligence over a monolithic "exam machine" model. Method: HTML/CSS/JS.
+        - Report Info: Learning from other nations -> Goal: Relate concepts geographically -> Viz: A simple, interactive world map concept using styled HTML buttons -> Interaction: Clicking a region opens a modal with specific lessons/warnings. Justification: More engaging than a list, contextualizes lessons geographically. Method: HTML/CSS/JS.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-active { border-color: #0d9488; color: #0d9488; font-weight: 500; }
+        .nav-item { transition: all 0.2s ease-in-out; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 400px; } }
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <div id="app" class="container mx-auto px-4 py-8 md:py-12">
+        
+        <header class="text-center mb-10 md:mb-16">
+            <h1 class="text-3xl md:text-5xl font-bold text-teal-800">The Human Superpower Manifesto</h1>
+            <p class="text-lg md:text-xl mt-2 text-stone-600">A Vision for Growth with Soul</p>
+        </header>
+
+        <nav class="flex flex-wrap justify-center border-b-2 border-stone-200 mb-8 md:mb-12">
+            <button data-target="vision" class="nav-item nav-active text-stone-600 py-3 px-4 md:px-6 border-b-2 border-transparent hover:border-teal-600 hover:text-teal-700">The Vision</button>
+            <button data-target="foundation" class="nav-item text-stone-600 py-3 px-4 md:px-6 border-b-2 border-transparent hover:border-teal-600 hover:text-teal-700">The Foundation</button>
+            <button data-target="human" class="nav-item text-stone-600 py-3 px-4 md:px-6 border-b-2 border-transparent hover:border-teal-600 hover:text-teal-700">The Human Element</button>
+            <button data-target="context" class="nav-item text-stone-600 py-3 px-4 md:px-6 border-b-2 border-transparent hover:border-teal-600 hover:text-teal-700">Global Context</button>
+            <button data-target="future" class="nav-item text-stone-600 py-3 px-4 md:px-6 border-b-2 border-transparent hover:border-teal-600 hover:text-teal-700">The Future</button>
+        </nav>
+
+        <main>
+            <section id="vision" class="content-section active fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Growth: With Soul, Not Just GDP</h2>
+                    <p class="max-w-3xl mx-auto text-stone-600">This section explores the core idea of the manifesto: shifting our measure of national success from purely economic indicators to a more holistic view of human well-being. The interactive chart below contrasts these two models of development. Use the toggle to see how a "Human Superpower" prioritizes its people's inner strength over raw economic output.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg max-w-5xl mx-auto">
+                    <div class="flex justify-center mb-6">
+                        <div class="inline-flex rounded-lg shadow-sm">
+                            <button id="soulBtn" class="bg-teal-600 text-white px-4 py-2 rounded-l-lg font-medium">Growth with Soul</button>
+                            <button id="gdpBtn" class="bg-stone-200 text-stone-700 px-4 py-2 rounded-r-lg font-medium">GDP-First Growth</button>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <h3 id="chartTitle" class="text-xl font-bold text-center mb-4 text-teal-700">The Human Superpower Model</h3>
+                            <p id="chartDesc" class="text-center text-stone-600 mb-4 h-24">This model prioritizes "invisible" but powerful forces. Growth is measured in empathy, equality, and the inner strength of the people. This creates a resilient, sustainable, and truly powerful society.</p>
+                             <div class="chart-container">
+                                <canvas id="superpowerChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="text-center bg-stone-100 p-6 rounded-lg">
+                             <h3 class="text-xl font-bold text-teal-700 mb-2">Core Principle</h3>
+                             <p id="quoteText" class="text-lg italic text-stone-700">"At the end of the day, love, kindness, and empathy are our food (for the soul). It is invisible like oxygen but very powerful."</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="foundation" class="content-section fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Building the Foundation</h2>
+                    <p class="max-w-3xl mx-auto text-stone-600">A strong society is built on trust and dignity. This section delves into two critical foundational pillars: creating a near-zero corruption environment inspired by Singapore, and dismantling the rich-poor barrier that erodes human dignity. Interact with the cards to explore these concepts.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-4">Pillar 1: Discipline & Integrity</h3>
+                        <p class="text-stone-600 mb-4">Singapore's rise demonstrates how clean governance and discipline can transform a nation. Corruption is not just theft; it's a destruction of potential.</p>
+                        <blockquote class="border-l-4 border-teal-500 pl-4 italic text-stone-700">"We can't get to zero corruption, but we can get very close to it."</blockquote>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-4">Pillar 2: Bridging the Divide</h3>
+                        <p class="text-stone-600 mb-4">The rich-poor barrier is more than economic; it's an emotional wall that breeds insecurity. True opportunity means ensuring no child feels inferior.</p>
+                        <blockquote class="border-l-4 border-teal-500 pl-4 italic text-stone-700">"The rich-poor barrier is not about standards—it includes bullying, insecurity, and many things that strip away human dignity."</blockquote>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="human" class="content-section fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Nurturing the Human Element</h2>
+                    <p class="max-w-3xl mx-auto text-stone-600">The true potential of a nation lies in its people. This requires an education system that nurtures diverse talents instead of pressuring students, and a culture of discipline based on respect, not fear. Explore the diagram to see the different forms of intelligence that must be fostered.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-start">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-4 text-center">Education: Beyond the Exam Machine</h3>
+                        <p class="text-stone-600 text-center mb-4">Every brain is unique and holds potential. We must guide children to discover their strengths.</p>
+                        <div class="relative flex justify-center items-center h-64">
+                            <div class="absolute w-24 h-24 bg-teal-600 text-white rounded-full flex items-center justify-center text-center p-2 font-bold shadow-lg">Child Potential</div>
+                            <div class="talent-item" style="transform: rotate(0deg) translate(100px) rotate(0deg);" data-quote="Intelligence has many forms—creativity, emotional sensitivity, strategic thinking, problem-solving, and compassion.">Creativity</div>
+                            <div class="talent-item" style="transform: rotate(60deg) translate(100px) rotate(-60deg);" data-quote="No brain is useless. Every child holds potential.">Problem-Solving</div>
+                            <div class="talent-item" style="transform: rotate(120deg) translate(100px) rotate(-120deg);" data-quote="Each human in the world has their own talent and ideas that are useful in many ways.">Emotional EQ</div>
+                            <div class="talent-item" style="transform: rotate(180deg) translate(100px) rotate(-180deg);" data-quote="The brain is not a waste muscle until it dies.">Strategic</div>
+                            <div class="talent-item" style="transform: rotate(240deg) translate(100px) rotate(-240deg);" data-quote="Let us guide them to discover their natural strengths, and nurture those abilities to serve society.">Compassion</div>
+                            <div class="talent-item" style="transform: rotate(300deg) translate(100px) rotate(-300deg);" data-quote="We must stop forcing children to become exam machines.">Artistic</div>
+                        </div>
+                         <p id="talentQuote" class="text-center italic mt-6 text-teal-800 h-12">Click a talent to see a related thought.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-4">Real Discipline vs. Fear</h3>
+                        <p class="text-stone-600 mb-4">True discipline is not silent obedience. It's a life skill built on self-awareness and mutual respect.</p>
+                        <blockquote class="border-l-4 border-teal-500 pl-4 italic text-stone-700 mb-6">"We have to teach actual discipline—not just forced obedience."</blockquote>
+                        <div class="space-y-3">
+                            <div class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span>Purpose-driven behavior</span></div>
+                            <div class="flex items-center"><span class="text-red-500 mr-2">✘</span><span>Fear-based suppression</span></div>
+                             <div class="flex items-center"><span class="text-teal-500 mr-2">✔</span><span>Mutual respect</span></div>
+                            <div class="flex items-center"><span class="text-red-500 mr-2">✘</span><span>Forced silence</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="context" class="content-section fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Learning with Wisdom: A Global View</h2>
+                    <p class="max-w-3xl mx-auto text-stone-600">A wise nation learns from others without blindly copying them. It adapts lessons to fit its own culture and humanity. This section explores key takeaways from different parts of the world. Click on a region to discover the lesson it holds for building a nation with soul.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
+                     <h3 class="text-xl font-bold text-center text-teal-700 mb-6">Global Lessons: Adaptation Over Copying</h3>
+                     <div class="flex flex-wrap justify-center gap-4">
+                        <button class="region-btn" data-title="Singapore: The Lesson in Governance" data-text="Singapore stands as a model in how near-zero corruption and strong discipline can rapidly transform a country through clean governance and a strong education system.">Singapore</button>
+                        <button class="region-btn" data-title="East Asia: A Cautionary Tale" data-text="Many East Asian nations now face low birth rates and emotional burnout due to over-prioritizing work. Growth must happen in a human way, not a robotic way, respecting family and well-being.">East Asia</button>
+                        <button class="region-btn" data-title="Scandinavia: Nurturing Education" data-text="We can learn from Scandinavian education systems, which often prioritize holistic development, creativity, and well-being over high-pressure testing.">Scandinavia</button>
+                         <button class="region-btn" data-title="Japan & Germany: Models of Discipline" data-text="We can be inspired by Japanese discipline and German engineering, but our implementation must preserve our own culture and emotional health.">Japan & Germany</button>
+                     </div>
+                 </div>
+            </section>
+            
+            <section id="future" class="content-section fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">A Generational Vision: The Invisible Revolution</h2>
+                    <p class="max-w-3xl mx-auto text-stone-600">Transforming a nation is a long-term mission. The seeds of empathy, equality, and responsibility we plant today will create the golden generation of tomorrow. This final section reflects on the patience required and the ultimate goal: a nation that grows with soul.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 mb-4">Planting Trees for the Future</h3>
+                        <p class="text-stone-600 mb-4">Change is slow, but when rooted in love and truth, it is unstoppable. We must be patient and persistent.</p>
+                        <blockquote class="border-l-4 border-teal-500 pl-4 italic text-stone-700">"Implementing these ideas is difficult initially. But after one generation, we will see the fruit."</blockquote>
+                    </div>
+                    <div class="bg-teal-700 text-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">The Ultimate Goal: Love as a National Asset</h3>
+                        <p class="mb-4">A real superpower is where citizens are not just smart, but kind. Where success doesn't bring arrogance, but a desire to lift others.</p>
+                        <div class="space-y-2 italic">
+                            <p>"We don't just want to grow. We want to grow with soul."</p>
+                            <p>"Real superpower is when a nation grows economically but breathes emotionally."</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="text-center mt-12 md:mt-20 border-t pt-6 text-stone-500">
+            <p>An Interactive Interpretation of Veeranarayanan's Vision</p>
+        </footer>
+
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl p-6 md:p-8 max-w-md w-full relative">
+            <button id="closeModal" class="absolute top-2 right-3 text-2xl text-stone-500 hover:text-stone-800">&times;</button>
+            <h3 id="modalTitle" class="text-2xl font-bold text-teal-700 mb-4"></h3>
+            <p id="modalText" class="text-stone-700"></p>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navButtons = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            const superpowerChartCtx = document.getElementById('superpowerChart').getContext('2d');
+            let superpowerChart;
+
+            const soulData = {
+                labels: ['Empathy', 'Equality', 'Trust', 'Discipline', 'Humanity', 'Safety'],
+                datasets: [{
+                    label: 'Growth with Soul',
+                    data: [90, 85, 80, 75, 95, 88],
+                    backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                    borderColor: 'rgba(13, 148, 136, 1)',
+                    pointBackgroundColor: 'rgba(13, 148, 136, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(13, 148, 136, 1)'
+                }]
+            };
+
+            const gdpData = {
+                labels: ['Empathy', 'Equality', 'Trust', 'Discipline', 'Humanity', 'Safety'],
+                datasets: [{
+                    label: 'GDP-First Growth',
+                    data: [30, 45, 40, 55, 35, 50],
+                    backgroundColor: 'rgba(120, 113, 108, 0.2)',
+                    borderColor: 'rgba(120, 113, 108, 1)',
+                    pointBackgroundColor: 'rgba(120, 113, 108, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(120, 113, 108, 1)'
+                }]
+            };
+            
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { display: false },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        grid: { color: '#e7e5e4' },
+                        pointLabels: { font: { size: 12 }, color: '#44403c' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            };
+
+            function createChart(data) {
+                if (superpowerChart) {
+                    superpowerChart.destroy();
+                }
+                superpowerChart = new Chart(superpowerChartCtx, {
+                    type: 'radar',
+                    data: data,
+                    options: chartOptions
+                });
+            }
+
+            createChart(soulData);
+
+            const soulBtn = document.getElementById('soulBtn');
+            const gdpBtn = document.getElementById('gdpBtn');
+            const chartTitle = document.getElementById('chartTitle');
+            const chartDesc = document.getElementById('chartDesc');
+            const quoteText = document.getElementById('quoteText');
+
+            soulBtn.addEventListener('click', () => {
+                createChart(soulData);
+                chartTitle.textContent = "The Human Superpower Model";
+                chartDesc.innerHTML = "This model prioritizes 'invisible' but powerful forces. Growth is measured in empathy, equality, and the inner strength of the people. This creates a resilient, sustainable, and truly powerful society.";
+                quoteText.innerHTML = `"At the end of the day, love, kindness, and empathy are our food (for the soul). It is invisible like oxygen but very powerful."`;
+                soulBtn.classList.add('bg-teal-600', 'text-white');
+                soulBtn.classList.remove('bg-stone-200', 'text-stone-700');
+                gdpBtn.classList.add('bg-stone-200', 'text-stone-700');
+                gdpBtn.classList.remove('bg-teal-600', 'text-white');
+            });
+
+            gdpBtn.addEventListener('click', () => {
+                createChart(gdpData);
+                chartTitle.textContent = "The GDP-First Model";
+                chartDesc.innerHTML = "This model chases economic growth, often at the cost of emotional and social well-being. It can lead to a rising GDP but a declining society with burnout and inequality.";
+                quoteText.innerHTML = `"Without being detected by radar, we can grow sky-high."`;
+                gdpBtn.classList.add('bg-teal-600', 'text-white');
+                gdpBtn.classList.remove('bg-stone-200', 'text-stone-700');
+                soulBtn.classList.add('bg-stone-200', 'text-stone-700');
+                soulBtn.classList.remove('bg-teal-600', 'text-white');
+            });
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    navButtons.forEach(btn => {
+                        btn.classList.remove('nav-active');
+                    });
+                    button.classList.add('nav-active');
+
+                    contentSections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                            section.classList.add('fade-in');
+                        } else {
+                            section.classList.remove('active');
+                             section.classList.remove('fade-in');
+                        }
+                    });
+                });
+            });
+
+            const talentItems = document.querySelectorAll('.talent-item');
+            const talentQuote = document.getElementById('talentQuote');
+            talentItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    talentQuote.textContent = `"${item.dataset.quote}"`;
+                });
+                item.classList.add('absolute', 'w-20', 'h-20', 'bg-white', 'border-2', 'border-teal-200', 'rounded-full', 'flex', 'items-center', 'justify-center', 'text-center', 'p-1', 'text-xs', 'font-medium', 'cursor-pointer', 'hover:bg-teal-100', 'hover:border-teal-400', 'transition-all', 'shadow');
+            });
+
+            const modal = document.getElementById('modal');
+            const closeModal = document.getElementById('closeModal');
+            const regionButtons = document.querySelectorAll('.region-btn');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+            
+            regionButtons.forEach(button => {
+                button.classList.add('bg-teal-100', 'text-teal-800', 'font-semibold', 'py-2', 'px-4', 'rounded-full', 'hover:bg-teal-200', 'transition-colors', 'shadow-sm');
+                button.addEventListener('click', () => {
+                    modalTitle.textContent = button.dataset.title;
+                    modalText.textContent = button.dataset.text;
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                });
+            });
+
+            closeModal.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if(e.target === modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
